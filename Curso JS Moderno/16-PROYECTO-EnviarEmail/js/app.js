@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     inputAsunto.addEventListener('input', validar); // Se puede usar blur o input, input es en tiempo real
 
-    inputMensaje.addEventListener('input', validar);
+    inputMensaje.addEventListener('input', validar); // Esta en una prueba para ver si ya esta mi cuenta Pierinnnn
 
     formulario.addEventListener('submit', enviarEmail);
 
