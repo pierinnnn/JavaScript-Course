@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const email = {
         email: '',
+        cc: '',
         asunto: '',
         mensaje: ''
     }
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const inputEmail = document.querySelector('#email');
     const inputAsunto = document.querySelector('#asunto');
     const inputMensaje = document.querySelector('#mensaje');
+    const inputCC = document.querySelector('#cc');
     const formulario = document.querySelector('#formulario');
     const btnSubmit = document.querySelector('#formulario button[type="submit"]');
     const btnReset = document.querySelector('#formulario button[type="reset"]');
@@ -20,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
     inputAsunto.addEventListener('input', validar); // Se puede usar blur o input, input es en tiempo real
 
-    inputMensaje.addEventListener('input', validar); // Finalmente se pudo
+    inputMensaje.addEventListener('input', validar);
+
+    inputCC.addEventListener('input', validar);
 
     formulario.addEventListener('submit', enviarEmail);
 
@@ -51,18 +55,33 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     function validar(e){
+        if(e.target.id === 'cc'){
+            if(e.target.value === ''){
+                limpiarAlerta(e.target.parentElement); // Borra cualquier alerta previa si el campo está vacío
+                email[e.target.name] = ''; // Deja el cc vacío sin afectar la validación
+                return;
+            }
+            if(!validarEmail(e.target.value)){
+                mostrarAlerta(`El email que ingresaste no es válido`, e.target.parentElement);
+                email[e.target.name] = '';
+                return;
+            }
+        }
+
         if(e.target.value.trim() === ''){
             mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement); // Se le pasa el elemento padre para inyectar el error debajo del campo
             email[e.target.name] = ''; // Asignar el valor vacío al objeto email en caso falle
             comprobarEmail();
-            return; // Para que no se ejecute el resto del código
+            return;
         } 
+
         if(e.target.id === 'email' && !validarEmail(e.target.value)){
             mostrarAlerta(`El email que ingresaste no es válido`, e.target.parentElement);
             email[e.target.name] = '';
             comprobarEmail();
             return; // Para que no se ejecute el resto del código
         }
+
         limpiarAlerta(e.target.parentElement);
 
         // Asignar los valores a la variable email
@@ -70,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         // Comprobar el objeto email
         comprobarEmail();
+        console.log(email);
     }
 
     function mostrarAlerta(mensaje, referencia) {
@@ -100,7 +120,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     function comprobarEmail(){
-        if(Object.values(email).includes('')) { // Comprueba si hay algún campo vacío
+        const { email: correo, asunto, mensaje } = email; // Destructuring del objeto email sin pasar el cc, nombrar correo para evitar confusion entre el nombre del objeto y el atributo
+        if([correo, asunto, mensaje].includes('')) { // Comprueba si hay algún campo vacío
             btnSubmit.classList.add('opacity-50');
             btnSubmit.disabled = true;
             return; // Detiene la ejecución de la función
@@ -111,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function resetearFormulario(){
         email.email = '';
+        email.cc = '';
         email.asunto = '';
         email.mensaje = '';
         formulario.reset();
